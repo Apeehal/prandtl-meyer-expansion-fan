@@ -13,26 +13,26 @@ def prendtl_meyer(M):
 M = np.linspace(1, 10, 1000)  # Typically, M should start from 1 since Prandtl-Meyer function is defined for supersonic flows
 deflections = [prendtl_meyer(m) for m in M]
 
-# Create the interpolation function
-interpolation_func = interp1d(M, deflections, kind='cubic')
+# Create the inverse interpolation function
+inverse_interpolation_func = interp1d(deflections, M, kind='cubic', fill_value='extrapolate')
 
-# Example: Find the angle of deflection at a specific Mach number
-specific_mach_number = 1.5
-specific_deflection_angle = interpolation_func(specific_mach_number)
+# Example: Find the Mach number for a specific deflection angle
+specific_deflection_angle = 20.0  # degrees
+specific_mach_number = inverse_interpolation_func(specific_deflection_angle)
 
-print(f"The angle of deflection at Mach {specific_mach_number} is {specific_deflection_angle:.6f} degrees.")
+print(f"The Mach number for a deflection angle of {specific_deflection_angle} degrees is {specific_mach_number:.6f}.")
 
-# Generate new Mach numbers for interpolation
-M_new = np.linspace(1, 10, 5000)
-deflections_new = interpolation_func(M_new)
+# Generate new deflection angles for interpolation
+deflections_new = np.linspace(min(deflections), max(deflections), 5000)
+M_new = inverse_interpolation_func(deflections_new)
 
 # Plotting the original and interpolated data
-plt.plot(M, deflections, 'o', label='Original data')
-plt.plot(M_new, deflections_new, '-', label='Interpolated data')
-plt.plot(specific_mach_number, specific_deflection_angle, 'rx', label=f'Mach {specific_mach_number}')
-plt.xlabel('Mach Number (M)')
-plt.ylabel('Deflection Angle (degrees)')
-plt.title('Prandtl-Meyer Expansion Angle vs Mach Number')
+plt.plot(deflections, M, 'o', label='Original data')
+plt.plot(deflections_new, M_new, '-', label='Interpolated data')
+plt.plot(specific_deflection_angle, specific_mach_number, 'rx', label=f'Deflection {specific_deflection_angle}°')
+plt.xlabel('Deflection Angle (degrees)')
+plt.ylabel('Mach Number (M)')
+plt.title('Mach Number vs Prandtl-Meyer Expansion Angle')
 plt.legend()
 plt.grid(True)
 plt.show()
